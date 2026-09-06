@@ -4,10 +4,11 @@
   color-scheme: light dark;
 
   --bg:      #f7f7f2;
-  --fg:      #1c1d1a;
-  --dim:     #6b6d66;
-  --accent:  #0e7490;   /* cyan-700, readable on light */
-  --selection: #0e749033;
+  --fg:      #33383e;
+  --bright:  #14181d;
+  --dim:     #767b82;
+  --accent:  #0369a1;   /* sky-700 */
+  --selection: #0369a133;
 
   --font-mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono",
                "Menlo", "Consolas", "Liberation Mono", monospace;
@@ -17,15 +18,15 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg:      #0b0e14;
-    --fg:      #c9d1d9;
-    --dim:     #6e7681;
-    --accent:  #22d3ee;   /* cyan-400 */
-    --selection: #22d3ee33;
+    --fg:      #b9c1cb;
+    --bright:  #eef2f6;
+    --dim:     #636b76;
+    --accent:  #38bdf8;   /* sky-400 */
+    --selection: #38bdf833;
   }
 }
 
 * { box-sizing: border-box; }
-
 html { height: 100%; }
 
 body {
@@ -50,40 +51,62 @@ main {
 .line {
   white-space: pre-wrap;
   word-break: break-word;
+  color: var(--bright);
 }
 
 .prompt {
   color: var(--accent);
+  font-weight: 600;
   user-select: none;
 }
 .prompt::after { content: " "; }
 
-.out {
-  color: var(--fg);
-}
-
-.comment { color: var(--dim); }
+.out { color: var(--fg); }
+.dim { color: var(--dim); }
 
 a {
   color: var(--accent);
   text-underline-offset: 3px;
 }
 
-/* ---- cursor ------------------------------------------------------------- */
+/* ---- live input ------------------------------------------------------------ */
+
+.iwrap { position: relative; }
+
+.mirror {
+  color: var(--bright);
+  white-space: pre;
+}
+
+input.cmd {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font: inherit;
+  outline: none;
+}
 
 .cursor {
   display: inline-block;
-  width: 0.6em;
+  width: 0.55em;
   height: 1.05em;
-  margin-left: 0.1em;
   vertical-align: text-bottom;
   background: var(--accent);
   animation: blink 1.05s steps(1) infinite;
 }
 
-@keyframes blink {
-  50% { opacity: 0; }
+.iwrap:not(:focus-within) .cursor {
+  animation: none;
+  opacity: 0.4;
 }
+
+@keyframes blink { 50% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   .cursor { animation: none; }
@@ -96,5 +119,6 @@ a {
   margin: 0 auto;
   font: inherit;
   white-space: pre-wrap;
+  color: var(--bright);
 }
 .fallback .prompt { color: var(--accent); }
