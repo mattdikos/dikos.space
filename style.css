@@ -63,10 +63,25 @@ main {
 
 .out { color: var(--fg); }
 .dim { color: var(--dim); }
+.accent { color: var(--accent); }
 
 a {
   color: var(--accent);
   text-underline-offset: 3px;
+}
+
+.hint {
+  color: var(--accent);
+  cursor: pointer;
+  user-select: none;
+}
+.hint:hover { text-decoration: underline; }
+
+.ghost {
+  color: var(--dim);
+  white-space: pre;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* ---- live input ------------------------------------------------------------ */

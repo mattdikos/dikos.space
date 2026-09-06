@@ -1,25 +1,71 @@
 /* Interactive terminal.
  *
- * `boot` is typed out on load. After that the prompt is live — type a command
- * and press Enter. Add commands to the `commands` map.
+ * `boot` runs on load, then the prompt goes live: type a command, press Enter.
+ * Tab / -> accepts the ghost completion. Up / Down walks history.
+ *
+ * Add content by editing the `commands` map. Each command returns an array of
+ * output lines; HTML is allowed in a line (e.g. links, coloured spans).
  */
 
-const boot = [
-  { cmd: "whoami", out: ["matus"] },
-];
+const boot = {
+  lines: [
+    "booting …",
+    "  mount /home/matus … ok",
+    "  load shell (zsh) … ok",
+    "",
+  ],
+  cmd: { cmd: "whoami", out: ["matus"] },
+};
 
 const commands = {
-  help:   () => ["commands: " + Object.keys(commands).sort().join(", ")],
+  help: () => ["commands: " + names().join(", ")],
+
   whoami: () => ["matus"],
-  date:   () => [new Date().toString()],
-  echo:   (args) => [args.join(" ")],
-  clear:  () => { term.replaceChildren(); return []; },
+
+  about: () => [
+    "matus — backend developer.",
+    "i build small things that help. this site is a scratchpad;",
+    "expect it to grow weird over time.",
+    "",
+    '<span class="dim">edit me: terminal.js → commands.about</span>',
+  ],
+
+  projects: () => [
+    "nothing shipped publicly yet — check back.",
+    "",
+    "  misko    ig group-chat bot        (private)",
+    '  <span class="dim">… edit terminal.js → commands.projects</span>',
+  ],
+
+  contact: () => [
+    '  github   <a href="https://github.com/mattdikos">github.com/mattdikos</a>',
+    '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>',
+  ],
+  links: () => commands.contact(),
+
+  neofetch: () => [
+    '<span class="accent">╭───╮</span>  matus@dikos.space',
+    '<span class="accent">│ ~ │</span>  ─────────────────',
+    '<span class="accent">╰───╯</span>  role     backend developer',
+    "       shell    zsh",
+    "       editor   pycharm",
+    "       host     dikos.space",
+    "       www      github.com/mattdikos",
+  ],
+
+  date: () => [new Date().toString()],
+  echo: (args) => [args.join(" ")],
+  clear: () => { term.replaceChildren(); return []; },
 };
 
 const PROMPT = "~$";
+const HINTS = ["about", "projects", "contact", "help"];
+
 const term = document.getElementById("term");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const names = () => Object.keys(commands).sort();
+
 const history = [];
 let hi = 0;
 
@@ -58,6 +104,21 @@ function run(raw) {
   print(fn ? fn(args) : [`zsh: command not found: ${name}`]);
 }
 
+function submit(input) {
+  const row = input.closest(".line");
+  const val = input.value;
+  input.disabled = true;
+  row.classList.remove("iwrap");
+  row.replaceChildren(promptSpan(), document.createTextNode(val));
+  run(val);
+  livePrompt();
+}
+
+function fillAndSubmit(cmd) {
+  const input = term.querySelector("input.cmd:not([disabled])");
+  if (input) { input.value = cmd; submit(input); }
+}
+
 function livePrompt() {
   const row = line("line iwrap");
   row.append(promptSpan());
@@ -67,6 +128,9 @@ function livePrompt() {
   const cursor = document.createElement("span");
   cursor.className = "cursor";
   cursor.setAttribute("aria-hidden", "true");
+  const ghost = document.createElement("span");
+  ghost.className = "ghost";
+  ghost.setAttribute("aria-hidden", "true");
   const input = document.createElement("input");
   input.className = "cmd";
   input.setAttribute("autocomplete", "off");
@@ -74,46 +138,81 @@ function livePrompt() {
   input.setAttribute("spellcheck", "false");
   input.setAttribute("aria-label", "terminal input");
 
-  row.append(mirror, cursor, input);
+  row.append(mirror, cursor, ghost, input);
   input.focus();
 
-  input.addEventListener("input", () => { mirror.textContent = input.value; });
+  function refresh() {
+    const v = input.value;
+    mirror.textContent = v;
+    let g = "";
+    if (v && !v.includes(" ")) {
+      const m = names().find((c) => c.startsWith(v) && c !== v);
+      if (m) g = m.slice(v.length);
+    }
+    ghost.textContent = g;
+  }
+
+  function acceptGhost() {
+    if (!ghost.textContent) return false;
+    input.value += ghost.textContent;
+    refresh();
+    return true;
+  }
+
+  input.addEventListener("input", refresh);
 
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-      const val = input.value;
-      input.disabled = true;
-      row.classList.remove("iwrap");
-      row.replaceChildren(promptSpan(), document.createTextNode(val));
-      run(val);
-      livePrompt();
+      submit(input);
+    } else if (e.key === "Tab") {
+      e.preventDefault();
+      acceptGhost();
+    } else if (e.key === "ArrowRight") {
+      if (input.selectionStart === input.value.length && acceptGhost()) e.preventDefault();
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      if (hi > 0) { hi--; input.value = history[hi]; mirror.textContent = input.value; }
+      if (hi > 0) { hi--; input.value = history[hi]; refresh(); }
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       if (hi < history.length - 1) { hi++; input.value = history[hi]; }
       else { hi = history.length; input.value = ""; }
-      mirror.textContent = input.value;
+      refresh();
     }
   });
 }
 
-document.addEventListener("click", () => {
+document.addEventListener("click", (e) => {
+  if (e.target.closest(".hint")) return;
   const el = term.querySelector("input.cmd:not([disabled])");
   if (el && !window.getSelection().toString()) el.focus();
 });
 
+function hintBar() {
+  const row = line("line dim");
+  row.append("try: ");
+  HINTS.forEach((c, i) => {
+    if (i) row.append(" · ");
+    const s = document.createElement("span");
+    s.className = "hint";
+    s.textContent = c;
+    s.addEventListener("click", () => fillAndSubmit(c));
+    row.append(s);
+  });
+}
+
 async function main() {
-  for (const step of boot) {
-    const row = line("line");
-    row.append(promptSpan());
-    if (reduce) row.append(document.createTextNode(step.cmd));
-    else { await typeInto(row, step.cmd); await wait(160); }
-    print(step.out);
-    if (!reduce) await wait(220);
+  for (const l of reduce ? [] : boot.lines) {
+    line("line dim", l);
+    await wait(90);
   }
-  line("line dim", "type 'help'");
+  const row = line("line");
+  row.append(promptSpan());
+  if (reduce) row.append(document.createTextNode(boot.cmd.cmd));
+  else { await typeInto(row, boot.cmd.cmd); await wait(160); }
+  print(boot.cmd.out);
+  if (!reduce) await wait(200);
+
+  hintBar();
   livePrompt();
 }
 
