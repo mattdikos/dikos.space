@@ -18,7 +18,7 @@ const boot = {
 };
 
 const commands = {
-  help: () => ["commands: " + names().join(", ")],
+  help: () => ["commands: " + names().filter((n) => !HIDDEN.has(n)).join(", ")],
 
   whoami: () => ["matus"],
 
@@ -29,6 +29,10 @@ const commands = {
     '<span class="dim">a proper cv goes here later — edit terminal.js → commands.about</span>',
   ],
 
+  school: () => [
+    '<span class="dim">school info goes here — edit terminal.js → commands.school</span>',
+  ],
+
   projects: () => [
     "nothing here yet.",
   ],
@@ -37,20 +41,78 @@ const commands = {
     '  github   <a href="https://github.com/mattdikos">github.com/mattdikos</a>',
     '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>',
   ],
-  links: () => commands.contact(),
+
+  // --- shell-ish -----------------------------------------------------------
+  pwd: () => ["/home/matus"],
+
+  ls: (args) => {
+    const visible = Object.keys(files).filter((f) => !f.startsWith("."));
+    const list = args.includes("-a") ? [".", "..", ...Object.keys(files)] : visible;
+    return [list.join("  ")];
+  },
+
+  cat: (args) => {
+    if (!args.length) return ["usage: cat <file>"];
+    const out = [];
+    for (const f of args) {
+      const fn = files[f];
+      if (fn) out.push(...fn());
+      else out.push(`cat: ${f}: No such file or directory`);
+    }
+    return out;
+  },
+
+  history: () => (history.length ? history.map((h, i) => `  ${i + 1}  ${h}`) : ["  (empty)"]),
 
   date: () => [new Date().toString()],
   echo: (args) => [args.join(" ")],
   clear: () => { term.replaceChildren(); return []; },
+
+  // --- jokes -------------------------------------------------------------------
+  sudo: () => ["matus is not in the sudoers file. This incident will be reported."],
+  exit: () => ["there is no exit."],
+  man: (args) => [args[0] ? `no manual entry for ${args[0]}. figure it out.` : "What manual page do you want?"],
+  sl: () => { train(); return ['<span class="dim">(you typed \'sl\'. did you mean \'ls\'?)</span>']; },
+
+  duck: (args) => {
+    const on = args[0] !== "off";
+    if (window.__duck) window.__duck.set(on);
+    return [on ? "🦆" : "the duck waddles off. (`duck` to bring it back)"];
+  },
 };
 
+const files = {
+  "about.txt": () => commands.about(),
+  "school.txt": () => commands.school(),
+  "contact.txt": () => commands.contact(),
+  ".you_found_me": () => ["quack. nothing here. go outside."],
+};
+
+const HIDDEN = new Set(["sl", "exit", "man"]);
+
 const PROMPT = "~$";
-const HINTS = ["about", "projects", "contact", "help"];
+const HINTS = ["about", "school", "contact", "help"];
 
 const term = document.getElementById("term");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const names = () => Object.keys(commands).sort();
+
+function train() {
+  const wrap = line("line train");
+  const car = document.createElement("pre");
+  car.className = "loco";
+  car.textContent = [
+    "        _____",
+    "  _____|   |_____",
+    " |  _ _ _ _ _ _  |___",
+    " |_(_)_(_)___(_)_(_)_|",
+    "   (o)         (o) ",
+  ].join("\n");
+  wrap.append(car);
+  car.addEventListener("animationend", () => wrap.remove());
+  setTimeout(() => wrap.remove(), 4000); // fallback if animation never fires
+}
 
 const history = [];
 let hi = 0;
@@ -81,6 +143,10 @@ function print(lines) {
   for (const l of lines || []) line("line out", l);
 }
 
+function scrollBottom() {
+  window.scrollTo({ top: document.documentElement.scrollHeight });
+}
+
 function run(raw) {
   const input = raw.trim();
   if (input) { history.push(input); hi = history.length; }
@@ -88,6 +154,7 @@ function run(raw) {
   const [name, ...args] = input.split(/\s+/);
   const fn = commands[name];
   print(fn ? fn(args) : [`command not found: ${name}`]);
+  window.dispatchEvent(new CustomEvent("cmd", { detail: name }));
 }
 
 function submit(input) {
@@ -126,6 +193,7 @@ function livePrompt() {
 
   row.append(mirror, cursor, ghost, input);
   input.focus();
+  scrollBottom();
 
   function refresh() {
     const v = input.value;

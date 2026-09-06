@@ -33,6 +33,7 @@ body {
   margin: 0;
   min-height: 100%;
   padding: clamp(1.25rem, 5vw, 4rem);
+  padding-bottom: 6rem;
   background: var(--bg);
   color: var(--fg);
   font: 15px/1.7 var(--font-mono);
@@ -126,6 +127,71 @@ input.cmd {
 @media (prefers-reduced-motion: reduce) {
   .cursor { animation: none; }
 }
+
+/* ---- sl: the train -------------------------------------------------------- */
+
+.train { overflow: hidden; }
+
+.loco {
+  margin: 0;
+  font: inherit;
+  white-space: pre;
+  color: var(--accent);
+  display: inline-block;
+  will-change: transform;
+  animation: chug 2.6s linear;
+}
+
+@keyframes chug {
+  from { transform: translateX(100vw); }
+  to   { transform: translateX(-30ch); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loco { animation-duration: 0.01s; }
+}
+
+/* ---- the duck ----------------------------------------------------------------- */
+
+#duck {
+  position: fixed;
+  bottom: 10px;
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font: 13px/1.15 var(--font-mono);
+  color: var(--accent);
+  pointer-events: none;
+  will-change: transform;
+}
+
+#duck .sprite {
+  margin: 0 0 0 4px;
+  white-space: pre;
+  cursor: pointer;
+  pointer-events: auto;
+}
+#duck .sprite.flip { transform: scaleX(-1); }
+#duck .sprite.spin { animation: duck-spin 0.48s ease; }
+
+@keyframes duck-spin { to { transform: rotate(360deg); } }
+
+#duck .bubble {
+  pointer-events: auto;
+  margin: 0 0 6px 2px;
+  padding: 3px 8px;
+  border: 1px solid var(--dim);
+  border-radius: 5px;
+  background: var(--bg);
+  color: var(--fg);
+  max-width: 62vw;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.25s, transform 0.25s;
+}
+#duck .bubble.show { opacity: 1; transform: translateY(0); }
 
 /* ---- no-js fallback --------------------------------------------------------- */
 
