@@ -23,18 +23,14 @@ const commands = {
   whoami: () => ["matus"],
 
   about: () => [
-    "matus — backend developer.",
-    "i build small things that help. this site is a scratchpad;",
-    "expect it to grow weird over time.",
+    "matus.",
+    "this site is a scratchpad; expect it to grow weird over time.",
     "",
-    '<span class="dim">edit me: terminal.js → commands.about</span>',
+    '<span class="dim">a proper cv goes here later — edit terminal.js → commands.about</span>',
   ],
 
   projects: () => [
-    "nothing shipped publicly yet — check back.",
-    "",
-    "  misko    ig group-chat bot        (private)",
-    '  <span class="dim">… edit terminal.js → commands.projects</span>',
+    "nothing here yet.",
   ],
 
   contact: () => [
@@ -42,16 +38,6 @@ const commands = {
     '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>',
   ],
   links: () => commands.contact(),
-
-  neofetch: () => [
-    '<span class="accent">╭───╮</span>  matus@dikos.space',
-    '<span class="accent">│ ~ │</span>  ─────────────────',
-    '<span class="accent">╰───╯</span>  role     backend developer',
-    "       shell    zsh",
-    "       editor   pycharm",
-    "       host     dikos.space",
-    "       www      github.com/mattdikos",
-  ],
 
   date: () => [new Date().toString()],
   echo: (args) => [args.join(" ")],
