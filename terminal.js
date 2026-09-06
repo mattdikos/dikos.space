@@ -30,7 +30,6 @@ const commands = {
 
   contact: () => [
     { html: '  github   <a href="https://github.com/mattdikos">github.com/mattdikos</a>' },
-    { html: '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>' },
   ],
 
   // --- shell-ish -----------------------------------------------------------

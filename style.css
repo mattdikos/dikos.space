@@ -224,6 +224,18 @@ input.cmd {
 }
 #duck .bubble.show { opacity: 1; }
 
+/* ---- colophon (page footer) --------------------------------------------- */
+
+#colophon {
+  max-width: var(--measure);
+  margin: 3.5rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--dim);
+  color: var(--dim);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
 /* ---- no-js fallback --------------------------------------------------------- */
 
 .fallback {
