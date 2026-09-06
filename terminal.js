@@ -11,7 +11,7 @@ const boot = {
   lines: [
     "booting …",
     "  mount /home/matus … ok",
-    "  load shell (zsh) … ok",
+    "  load shell … ok",
     "",
   ],
   cmd: { cmd: "whoami", out: ["matus"] },
@@ -87,7 +87,7 @@ function run(raw) {
   if (!input) return;
   const [name, ...args] = input.split(/\s+/);
   const fn = commands[name];
-  print(fn ? fn(args) : [`zsh: command not found: ${name}`]);
+  print(fn ? fn(args) : [`command not found: ${name}`]);
 }
 
 function submit(input) {
