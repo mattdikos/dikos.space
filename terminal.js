@@ -74,15 +74,15 @@ const commands = {
   man: (args) => [args[0] ? `no manual entry for ${args[0]}. figure it out.` : "What manual page do you want?"],
   sl: () => { train(); return ['<span class="dim">(you typed \'sl\'. did you mean \'ls\'?)</span>']; },
 
-  duck: (args) => {
+  ducky: (args) => {
     const on = args[0] !== "off";
     if (window.__duck) {
       window.__duck.set(on);
       if (on) setTimeout(() => window.__duck.fact && window.__duck.fact(), 400);
     }
-    return [on ? "🦆" : "ducky waddles off. (`duck` to bring him back)"];
+    return [on ? "🦆" : "ducky waddles off. (`ducky` to bring him back)"];
   },
-  ducky: (args) => commands.duck(args),
+  duck: (args) => commands.ducky(args),
 };
 
 const files = {
@@ -92,7 +92,7 @@ const files = {
   ".you_found_me": () => ["quack. nothing here. go outside."],
 };
 
-const HIDDEN = new Set(["sl", "exit", "man", "ducky"]);
+const HIDDEN = new Set(["sl", "exit", "man", "duck"]);
 
 const PROMPT = "~$";
 const HINTS = ["about", "school", "contact", "help"];

@@ -2,7 +2,7 @@
  * a command, tells you what to try, and shares short (duck) facts. Click him and
  * he gets pinched.
  *
- * Toggle from the terminal: `duck` / `duck off` (alias: `ducky`). State persists.
+ * Toggle from the terminal: `ducky` / `ducky off`. State persists.
  * Respects prefers-reduced-motion (no pacing; he still talks).
  */
 
