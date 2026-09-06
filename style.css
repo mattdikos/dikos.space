@@ -71,12 +71,39 @@ a {
   text-underline-offset: 3px;
 }
 
-.hint {
-  color: var(--accent);
-  cursor: pointer;
-  user-select: none;
+/* ---- sticky nav ---------------------------------------------------------- */
+
+#nav {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  max-width: var(--measure);
+  margin: 0 auto 1.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--dim);
 }
-.hint:hover { text-decoration: underline; }
+
+#nav .brand {
+  color: var(--accent);
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+#nav .navcmd {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+#nav .navcmd:hover,
+#nav .navcmd:focus-visible { text-decoration: underline; outline: none; }
 
 .ghost {
   color: var(--dim);

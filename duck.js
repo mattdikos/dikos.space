@@ -19,7 +19,7 @@
   const TIPS = [
     "psst — type  help",
     "try  about  ·  school",
-    "not sure? click a word up top",
+    "the bar up top is clickable",
     "run  ls  to look around",
     "cat about.txt",
   ];

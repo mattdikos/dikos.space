@@ -1,21 +1,12 @@
 /* Interactive terminal.
  *
- * `boot` runs on load, then the prompt goes live: type a command, press Enter.
- * Tab / -> accepts the ghost completion. Up / Down walks history.
+ * On load it types `whoami`, then the prompt goes live: type a command, press
+ * Enter. Tab / -> accepts the ghost completion. Up / Down walks history.
  *
  * Add content by editing the `commands` map. Each command returns an array of
  * output lines; HTML is allowed in a line (e.g. links, coloured spans).
+ * `NAV` is the sticky top bar of clickable commands.
  */
-
-const boot = {
-  lines: [
-    "booting …",
-    "  mount /home/matus … ok",
-    "  load shell … ok",
-    "",
-  ],
-  cmd: { cmd: "whoami", out: ["matus"] },
-};
 
 const commands = {
   help: () => ["commands: " + names().filter((n) => !HIDDEN.has(n)).join(", ")],
@@ -82,7 +73,6 @@ const commands = {
     }
     return [on ? "🦆" : "ducky waddles off. (`ducky` to bring him back)"];
   },
-  duck: (args) => commands.ducky(args),
 };
 
 const files = {
@@ -92,10 +82,10 @@ const files = {
   ".you_found_me": () => ["quack. nothing here. go outside."],
 };
 
-const HIDDEN = new Set(["sl", "exit", "man", "duck"]);
+const HIDDEN = new Set(["sl", "exit", "man"]);
 
 const PROMPT = "~$";
-const HINTS = ["about", "school", "contact", "help"];
+const NAV = ["about", "school", "projects", "contact", "help"];
 
 const term = document.getElementById("term");
 const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -240,37 +230,36 @@ function livePrompt() {
 }
 
 document.addEventListener("click", (e) => {
-  if (e.target.closest(".hint")) return;
+  if (e.target.closest("#nav")) return;
   const el = term.querySelector("input.cmd:not([disabled])");
   if (el && !window.getSelection().toString()) el.focus();
 });
 
-function hintBar() {
-  const row = line("line dim");
-  row.append("try: ");
-  HINTS.forEach((c, i) => {
-    if (i) row.append(" · ");
-    const s = document.createElement("span");
-    s.className = "hint";
-    s.textContent = c;
-    s.addEventListener("click", () => fillAndSubmit(c));
-    row.append(s);
-  });
+function buildNav() {
+  const nav = document.getElementById("nav");
+  if (!nav) return;
+  const brand = document.createElement("span");
+  brand.className = "brand";
+  brand.textContent = ">_";
+  nav.append(brand);
+  for (const name of NAV) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "navcmd";
+    b.textContent = name;
+    b.addEventListener("click", () => fillAndSubmit(name));
+    nav.append(b);
+  }
 }
 
 async function main() {
-  for (const l of reduce ? [] : boot.lines) {
-    line("line dim", l);
-    await wait(90);
-  }
+  buildNav();
   const row = line("line");
   row.append(promptSpan());
-  if (reduce) row.append(document.createTextNode(boot.cmd.cmd));
-  else { await typeInto(row, boot.cmd.cmd); await wait(160); }
-  print(boot.cmd.out);
+  if (reduce) row.append(document.createTextNode("whoami"));
+  else { await typeInto(row, "whoami"); await wait(160); }
+  print(["matus"]);
   if (!reduce) await wait(200);
-
-  hintBar();
   livePrompt();
 }
 
