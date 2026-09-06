@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'">
   <title>dikos.space</title>
   <meta name="description" content="dikos.space">
   <meta name="color-scheme" content="light dark">
@@ -12,6 +14,8 @@
   <!-- analytics: cookieless, no personal data.
        1. sign up at https://www.goatcounter.com/ (pick a code, e.g. "dikos")
        2. uncomment the tag below and set your code
+       3. add to the CSP above:  script-src ... https://gc.zgo.at
+          and:  img-src ... https://*.goatcounter.com
   <script data-goatcounter="https://YOURCODE.goatcounter.com/count"
           async src="//gc.zgo.at/count.js"></script>
   -->

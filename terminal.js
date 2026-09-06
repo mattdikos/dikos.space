@@ -17,11 +17,11 @@ const commands = {
     "matus.",
     "this site is a scratchpad; expect it to grow weird over time.",
     "",
-    '<span class="dim">a proper cv goes here later — edit terminal.js → commands.about</span>',
+    { html: '<span class="dim">a proper cv goes here later — edit terminal.js → commands.about</span>' },
   ],
 
   school: () => [
-    '<span class="dim">school info goes here — edit terminal.js → commands.school</span>',
+    { html: '<span class="dim">school info goes here — edit terminal.js → commands.school</span>' },
   ],
 
   projects: () => [
@@ -29,8 +29,8 @@ const commands = {
   ],
 
   contact: () => [
-    '  github   <a href="https://github.com/mattdikos">github.com/mattdikos</a>',
-    '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>',
+    { html: '  github   <a href="https://github.com/mattdikos">github.com/mattdikos</a>' },
+    { html: '  email    <a href="mailto:mattdikos@gmail.com">mattdikos@gmail.com</a>' },
   ],
 
   // --- shell-ish -----------------------------------------------------------
@@ -63,7 +63,7 @@ const commands = {
   sudo: () => ["matus is not in the sudoers file. This incident will be reported."],
   exit: () => ["there is no exit."],
   man: (args) => [args[0] ? `no manual entry for ${args[0]}. figure it out.` : "What manual page do you want?"],
-  sl: () => { train(); return ['<span class="dim">(you typed \'sl\'. did you mean \'ls\'?)</span>']; },
+  sl: () => { train(); return [{ html: '<span class="dim">(you typed \'sl\'. did you mean \'ls\'?)</span>' }]; },
 
   ducky: (args) => {
     const on = args[0] !== "off";
@@ -119,6 +119,16 @@ function line(cls, html) {
   return d;
 }
 
+// A command output line is plain text (escaped) unless it is {html: "..."},
+// which is only ever built from literals in this file — never user input.
+function outLine(l) {
+  const d = document.createElement("div");
+  d.className = "line out";
+  if (l && typeof l === "object" && typeof l.html === "string") d.innerHTML = l.html;
+  else d.textContent = String(l);
+  term.append(d);
+}
+
 function promptSpan() {
   const s = document.createElement("span");
   s.className = "prompt";
@@ -134,7 +144,7 @@ async function typeInto(node, text) {
 }
 
 function print(lines) {
-  for (const l of lines || []) line("line out", l);
+  for (const l of lines || []) outLine(l);
 }
 
 function scrollBottom() {
