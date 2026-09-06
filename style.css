@@ -173,10 +173,15 @@ input.cmd {
   cursor: pointer;
   pointer-events: auto;
 }
-#duck .sprite.flip { transform: scaleX(-1); }
+#duck .sprite.flip { scale: -1 1; }
 #duck .sprite.spin { animation: duck-spin 0.48s ease; }
+#duck .sprite.pinch { animation: duck-squish 0.36s ease; }
 
 @keyframes duck-spin { to { transform: rotate(360deg); } }
+@keyframes duck-squish {
+  30% { transform: scale(1.35, 0.65); }
+  65% { transform: scale(0.85, 1.2); }
+}
 
 #duck .bubble {
   pointer-events: auto;
@@ -186,12 +191,11 @@ input.cmd {
   border-radius: 5px;
   background: var(--bg);
   color: var(--fg);
-  max-width: 62vw;
+  max-width: min(60vw, 260px);
   opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.25s, transform 0.25s;
+  transition: opacity 0.25s;
 }
-#duck .bubble.show { opacity: 1; transform: translateY(0); }
+#duck .bubble.show { opacity: 1; }
 
 /* ---- no-js fallback --------------------------------------------------------- */
 

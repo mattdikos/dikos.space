@@ -76,9 +76,13 @@ const commands = {
 
   duck: (args) => {
     const on = args[0] !== "off";
-    if (window.__duck) window.__duck.set(on);
-    return [on ? "🦆" : "the duck waddles off. (`duck` to bring it back)"];
+    if (window.__duck) {
+      window.__duck.set(on);
+      if (on) setTimeout(() => window.__duck.fact && window.__duck.fact(), 400);
+    }
+    return [on ? "🦆" : "ducky waddles off. (`duck` to bring him back)"];
   },
+  ducky: (args) => commands.duck(args),
 };
 
 const files = {
@@ -88,7 +92,7 @@ const files = {
   ".you_found_me": () => ["quack. nothing here. go outside."],
 };
 
-const HIDDEN = new Set(["sl", "exit", "man"]);
+const HIDDEN = new Set(["sl", "exit", "man", "ducky"]);
 
 const PROMPT = "~$";
 const HINTS = ["about", "school", "contact", "help"];
