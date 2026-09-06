@@ -3,28 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>dikos.space</title>
-  <meta name="description" content="Personal space of Matúš Dikoš.">
+  <title>matus</title>
+  <meta name="description" content="matus">
+  <meta name="color-scheme" content="light dark">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>Matúš Dikoš</h1>
-    <p class="tagline">Backend developer. Building small things that help.</p>
+  <main id="term" aria-label="terminal session"></main>
 
-    <ul class="links">
-      <li><a href="https://github.com/mattdikos">GitHub</a></li>
-      <li><a href="mailto:mattdikos@gmail.com">Email</a></li>
-    </ul>
+  <noscript>
+    <pre class="fallback"><span class="prompt">~$</span> whoami
+matus</pre>
+  </noscript>
 
-    <footer>
-      <!-- Edit this page freely. It's just static HTML. -->
-      <span id="year"></span> · dikos.space
-    </footer>
-  </main>
-
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+  <script src="terminal.js" defer></script>
 </body>
 </html>
